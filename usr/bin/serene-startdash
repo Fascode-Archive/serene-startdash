@@ -225,14 +225,6 @@ installed_list () { ${pacman} -Q | awk '{print $2}'; }
 
 
 
-#-- スクリプトディレクトリのチェック --#
-if [[ ! -d $script_dir ]]; then
-    error 600 100 "$script_dirが存在しません。"
-    exit
-fi
-
-
-
 #-- pacapt --#
 if [[ ! -f $pacman ]]; then
     error 600 100 "$pacmanが存在しません。"
