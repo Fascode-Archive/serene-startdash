@@ -31,7 +31,7 @@ window_icon="/usr/share/pixmaps/serene/icon_flat_noshadow.png"
 
 #-- pacaptのパス --#
 #
-pacman="/usr/local/bin/pacapt"
+pacman="/usr/bin/pacapt"
 
 
 
