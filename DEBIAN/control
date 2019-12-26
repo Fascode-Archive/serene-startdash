@@ -10,3 +10,4 @@ Homepage: https://github.com/Hayao0819/EG-Installer
 Description: パッケージの追加を簡単に行える小さなGUIツール
  パッケージの追加や削除をGUIから簡単に行うことができるツールです。EG-InstallerをベースにSereneTeamが独自で改良を加えています。
  /etc/serene-startdash/softwaresにスクリプトを置くことで簡単に項目の追加や削除を行うことができます。
+ 
