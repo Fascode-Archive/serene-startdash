@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+if [[ ! $UID = 0 ]]; then
+    echo "Please run as root."
+    exit 1
+fi
+
+clone_url=
+tmp_dir=/tmp/serene-startdash
+
+set -eu
+
+mkdir -p $tmp_dir
+git clone $clone_url $tmp_dir
+cd $tmp_dir
+rm README.md
+rm LICENCE.md
+rm -rf .git
+cd ..
+dpkg -b $(dirname $tmp_dir)
+pkg=$(find ./ -name "serene-startdash*.deb")
+mv $pkg $(pwd)
