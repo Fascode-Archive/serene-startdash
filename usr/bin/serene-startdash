@@ -320,6 +320,8 @@ function install_and_uninstall () {
         --height="100" \
         --text="スクリプトの読み込みを行います。これにはしばらく時間がかかる場合があります。\nしばらくたっても表示されない場合はターミナル上でスクリプトを実行してみてください。" \
         --ok-label="読み込み開始"
+    
+    serene-startdash-update-scripts | loading 600 100 "スクリプトを最新のものに更新しています。"
 
     gen_list () {
         window \

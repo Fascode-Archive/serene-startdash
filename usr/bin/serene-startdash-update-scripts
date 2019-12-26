@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -eu
+# ダウンロードするURL
+url="https://serenelinux.com/redirect/softwares/bionic"
+
+# 展開先
+extract_dir="/etc/serene-startdash/softwares"
+
+# 一時保存先
+download_path="/tmp/download/softwares.tar.gz"
+
+# 設定した値の整形
+extract_dir=${extract_dir%/}
+
+# ディレクトリ作成
+if [[ ! -d $extract_dir ]]; then
+    mkdir -p $extract_dir
+fi
+
+# ダウンロード
+curl -Ls -o $download_path --create-dirs $url
+
+# 古いファイルを削除
+rm -f $extract_dir/*
+
+# 展開
+tar -zxvf "$download_path" -C $(dirname ${download_path}) > /dev/null
+
+# 移動
+version=$(curl -s https://api.github.com/repos/hayao0819/serene-startdash-scripts-bionic/releases/latest | jq '.tag_name')
+version=${version::-1}
+version=${version:2}
+mv $(dirname ${download_path})/serene-startdash-scripts-bionic-${version}/* $extract_dir
+rm $extract_dir/README.md
+
+# ダウンロードした一時ファイルを削除
+rm -f $download_path
+rm -rf $(dirname ${download_path})/serene-startdash-scripts-bionic-${version}/
