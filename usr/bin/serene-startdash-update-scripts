@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
 set -eu
+
+# バージョン情報の取得
+version=$(curl -s https://api.github.com/repos/hayao0819/serene-startdash-scripts-bionic/releases/latest | jq '.tag_name')
+version=${version::-1}
+version=${version:2}
+
 # ダウンロードするURL
 url="https://serenelinux.com/redirect/softwares/bionic"
 
@@ -28,9 +34,7 @@ rm -f $extract_dir/*
 tar -zxvf "$download_path" -C $(dirname ${download_path}) > /dev/null
 
 # 移動
-version=$(curl -s https://api.github.com/repos/hayao0819/serene-startdash-scripts-bionic/releases/latest | jq '.tag_name')
-version=${version::-1}
-version=${version:2}
+
 mv $(dirname ${download_path})/serene-startdash-scripts-bionic-${version}/* $extract_dir
 rm $extract_dir/README.md
 
