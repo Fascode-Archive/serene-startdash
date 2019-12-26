@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+sudo bash -x $(cd $(dirname $0) && pwd)/run.sh -p -u hayao
