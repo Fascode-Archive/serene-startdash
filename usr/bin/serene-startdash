@@ -269,6 +269,14 @@ function upgrade_pkg () {
 
 #-- インストールとアンインストール --#
 function install_and_uninstall () {
+
+    # スクリプトのアップデート処理
+    set + eu
+    if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then
+        $softwares_update | loading 600 100 "スクリプトを更新しています。"
+    fi
+    set -eu
+
     # スクリプト読み込み
     scripts=($(cd $script_dir; ls *.${entry_extension}; cd ..))
     for package in ${scripts[@]}; do
@@ -313,8 +321,6 @@ function install_and_uninstall () {
         --text="スクリプトの読み込みを行います。これにはしばらく時間がかかる場合があります。\nしばらくたっても表示されない場合はターミナル上でスクリプトを実行してみてください。" \
         --ok-label="読み込み開始"
     
-    serene-startdash-update-scripts | loading 600 100 "スクリプトを最新のものに更新しています。"
-
     gen_list () {
         window \
             --list \
