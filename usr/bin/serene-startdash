@@ -30,7 +30,7 @@
 #-- 設定 --#
 settings=/etc/serene-startdash/config
 entry_extension="entry"
-version=1.6
+version=1.6.1-2
 
 
 
