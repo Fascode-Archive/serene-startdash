@@ -297,9 +297,11 @@ function install_and_uninstall () {
         }
 
         check_variable name
+        set +eu
         if [[ $install_check = false ]]; then
             check_variable package_name
         fi
+        set -eu
         check_variable description
         check_variable run_preparing
         check_func install
