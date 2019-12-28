@@ -6,8 +6,12 @@ set -eu
 source /etc/os-release
 # VERSION_CODENAME=bionic
 
+# アップデートするリポジトリ
+git_username="Hayao0819"
+git_reponame="serene-startdash-scripts-${VERSION_CODENAME}"
+
 # バージョン情報の取得
-version=$(curl -s https://api.github.com/repos/hayao0819/serene-startdash-scripts-${VERSION_CODENAME}/releases/latest | jq '.tag_name')
+version=$(curl -s https://api.github.com/repos/${git_username}/${git_reponame}/releases/latest | jq '.tag_name')
 version=${version::-1}
 version=${version:2}
 
