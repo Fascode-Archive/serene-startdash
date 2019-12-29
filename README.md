@@ -7,3 +7,6 @@ pacaptは[こちらのスクリプト](https://github.com/Hayao0819/pacapt-insta
 
 # バージョンについて
 [EG-Installer]-[ビルド番号]というようにしていきます。EG-Installerのバージョンが変わるとビルド番号もリセットします。
+
+# softwaresについて
+EG-Installerにある`softwares`は[こちら](https://github.com/Hayao0819/serene-startdash-scripts-bionic)で開発を行っています。
