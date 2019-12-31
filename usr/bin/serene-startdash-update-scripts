@@ -7,7 +7,7 @@ source /etc/os-release
 # VERSION_CODENAME=bionic
 
 # アップデートするリポジトリ
-git_username="Hayao0819"
+git_username="hayao-serene"
 git_reponame="serene-startdash-scripts-${VERSION_CODENAME}"
 
 # バージョン情報の取得

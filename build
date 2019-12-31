@@ -5,7 +5,7 @@ if [[ ! $UID = 0 ]]; then
     exit 1
 fi
 
-clone_url=https://github.com/Hayao0819/serene-startdash.git
+clone_url=https://github.com/hayao-serene/serene-startdash.git
 tmp_dir=/tmp/serene-startdash
 
 set -eu
