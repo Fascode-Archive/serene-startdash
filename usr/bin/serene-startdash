@@ -30,7 +30,7 @@
 #-- 設定 --#
 settings=/etc/serene-startdash/config
 entry_extension="entry"
-version=1.7.2-1
+version=1.7.3-1
 
 
 
@@ -247,7 +247,7 @@ set -eu
 
 #-- クリーンアップ --#
 function cleanup () {
-    $pacman -Scc --noconfirm　| loading 600 100 "クリーンアップを実行中です。"
+    $pacman -Scc --noconfirm | loading 600 100 "クリーンアップを実行中です。"
     $pacman -Rsn --noconfirm | loading 600 100 "クリーンアップを実行中です"
 }
 
@@ -360,7 +360,13 @@ function install_and_uninstall () {
     selected_list=(${selected_list//'|'/ })
     set +eu
     if [[ ! $exit_code = 0 && -z $selected_list ]]; then
-        error 600 100 "パッケージが選択されませんでした。トップに戻ります。"
+        error 600 100 "パッケージが選択されませんでした。$(
+        if [[ ! $direct_execution = "true" ]]; then
+            echo 'トップに戻ります。'
+        else
+            echo '終了します。'
+        fi
+        )"
         call_me $options
         exit
     fi
