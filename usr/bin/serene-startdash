@@ -100,18 +100,6 @@ function info () {
         --text="$3"
 }
 
-# ユーザーチェック
-function user_check () {
-    if [[ $(getent passwd $1 > /dev/null ; printf $?) = 0 ]]; then
-        if [[ -z $1 ]]; then
-            printf 1
-        fi
-        printf 0
-    else
-        printf 1
-    fi
-}
-
 # 設定上の関数チェック
 function check_func () {
     if [[ ! $(type -t $1) = "function" ]]; then
@@ -121,7 +109,7 @@ function check_func () {
 }
 
 # パッケージチェック
-check_pkg () {
+function check_pkg () {
     if [[ -n $(installed_list | grep -x "$1") ]]; then
         printf 0
     else
@@ -168,8 +156,8 @@ fi
 
 #-- 設定読み込み --#
 set +eu
-if [[ ! -f $settings ]]; then
-    error 600 100 "$settingsが存在しません。"
+if [[ ! -f $settings || ! -r $settings ]]; then
+    error 600 100 "$settingsが読み込めませんでした。"
     exit 1
 fi
 source $settings
@@ -181,8 +169,8 @@ set -eu
 
 
 #-- アイコンチェック --#
-if [[ ! -f $window_icon ]]; then
-    error 600 100 "$window_iconが存在しません。"
+if [[ ! -f $window_icon || ! -r $window_icon ]]; then
+    error 600 100 "$window_iconが読み込めませんでした。"
     exit 1
 fi
 
@@ -196,6 +184,7 @@ function show_version () {
         --height="100" \
         --text="＝＝　EG-Intaler　＝＝\nVersion:　${version}\nYamada　Hayao　shun819.mail@gmail.com"
     debug_msg "EG-installer v${version}"
+    exit 0
 }
 
 
@@ -253,20 +242,6 @@ function cleanup () {
 
 
 
-#-- データベースのアップデート --#
-function update_db () {
-    $pacman -Syy --noconfirm
-}
-
-
-
-#-- パッケージのアップグレード --#
-function upgrade_pkg () {
-    $pacman -Syu --noconfirm
-}
-
-
-
 #-- インストールとアンインストール --#
 function install_and_uninstall () {
 
@@ -283,17 +258,21 @@ function install_and_uninstall () {
         source $script_dir/$package
 
         function check_func () {
+            set +eu
             if [[ ! $(type -t $1) = "function" ]]; then
                 error 600 100 "スクリプト$packageの$1関数が間違っています。"
                 exit 1
             fi
+            set -eu
         }
         function check_variable () {
+            set +eu
             eval variable=$1
             if [[ -z $variable ]]; then
                 error 600 100 "スクリプト$packageに$variable変数が間違っています。"
                 exit 1
             fi
+            set -eu
         }
 
         check_variable name
@@ -374,7 +353,7 @@ function install_and_uninstall () {
 
 
     # データベースの更新
-    update_db | loading 600 100 "リポジトリデータベースを更新しています。"
+    $pacman -Syy --noconfirm | loading 600 100 "リポジトリデータベースを更新しています。"
 
 
 
@@ -457,13 +436,20 @@ if [[ ! $direct_execution = true ]]; then
     run=$(
         window \
             --info \
-            --text="何を実行しますか？\n\n終了・・・終了します\nクリーンアップ・・・パッケージのクリーンアップを行います。\nアップグレード・・・パッケージのアップグレードを行います\n追加と削除・・・パッケージのインストールやアンインストールを行います。 " \
+            --text="何を実行しますか？\n\n終了・・・終了します$( if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then echo "\n一覧をアップデート・・・「追加と削除」で選択できる項目をアップデートします。"; fi )\nクリーンアップ・・・パッケージのクリーンアップを行います。\nアップグレード・・・パッケージのアップグレードを行います\n追加と削除・・・パッケージのインストールやアンインストールを行います。 " \
             --ok-label="終了する" \
+            $(
+                # スクリプトのアップデート
+                if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then
+                # if true; then
+                    echo "--extra-button=一覧をアップデート"
+                fi
+            ) \
             --extra-button="クリーンアップ" \
             --extra-button="アップグレード" \
             --extra-button="追加と削除" \
-            --width="300" \
-            --height="100"
+            --width="400" \
+            --height="120"
     )
     exit_code=$?
     case $exit_code in
@@ -471,12 +457,15 @@ if [[ ! $direct_execution = true ]]; then
                 * ) :;;
     esac
 fi
+
+
 debug_msg "$runが選択されました。"
 case $run in
     "追加と削除" ) install_and_uninstall ;;
-    "アップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
+    "アップグレード" ) $pacman -Syu --noconfirm | loading 600 100 "パッケージのアップグレードを行っています。" ;;
     "クリーンアップ" ) cleanup ;;
-    * ) exit 1 ;;
+    "一覧をアップデート" ) $softwares_update | loading 600 100 "スクリプトを更新しています。";;
+    * ) error 600 100 "例外が発生しました。"; exit 1;;
 esac
 set -eu
 
