@@ -30,7 +30,7 @@
 #-- 設定 --#
 settings=/etc/serene-startdash/config
 entry_extension="entry"
-version=1.7.3-1
+version=1.8-1
 
 
 
@@ -169,8 +169,11 @@ set -eu
 
 
 #-- アイコンチェック --#
-if [[ ! -f $window_icon || ! -r $window_icon ]]; then
-    error 600 100 "$window_iconが読み込めませんでした。"
+if [[ ! -f $window_icon ]]; then
+    error 600 100 "$window_iconが存在しません。"
+    exit 1
+elif [[ ! -r $window_icon ]]; then
+    error 600 100 "$window_iconが読み込めませんでした。権限を確認してください。"
     exit 1
 fi
 
