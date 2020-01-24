@@ -30,7 +30,7 @@
 #-- 設定 --#
 settings=/etc/serene-startdash/config
 entry_extension="entry"
-version=1.8.1-1
+version=1.9-1
 
 
 
@@ -123,6 +123,7 @@ function clear_variable () {
     unset package_name
     unset description
     unset run_preparing
+    unset preparing_msg
     unset install
     unset uninstall
     unset preparing
@@ -132,7 +133,7 @@ function clear_variable () {
 # デバッグモード
 function debug_msg () {
     if [[ $debug_mode = true ]]; then
-        echo $@
+        echo -e $@
     fi
 }
 
@@ -206,6 +207,7 @@ while getopts 'ehr:s:t:vxz' arg; do
         v) show_version;exit 0;;
         x) set -x; warning 600 100 "bashデバッグモードが有効化されました。";;
         z) debug_mode=true; warning 600 100 "デバッグモードが有効化されました。" ;;
+        w) set -x; debug_mode=true; warning 600 100 "bashデバッグモードが有効化されました。\nデバッグモードが有効化されました。";;
         "") : ;;
         #* ) exit 1;;
     esac
@@ -393,7 +395,12 @@ function install_and_uninstall () {
                 --width=600 \
                 --height=100
             if $run_preparing; then
-                preparing | loading 600 100 "パッケージをビルドしています"
+                if [[ -n $preparing_msg ]]; then
+                        preparing | loading 600 100 $preparing_msg
+                    else
+                        preparing | loading 600 100 "パッケージをビルドしています"
+                    fi
+                fi
             fi
             install | loading 600 100 "パッケージ$nameをインストールしています"
             set +eu
