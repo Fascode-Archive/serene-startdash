@@ -4,7 +4,7 @@ Maintainer: Yamada Hayao <shun819.mail@gmail.com>
 Section: utils
 Priority: optional
 Architecture: all
-Depends: bash, zenity, jq, pacapt, gdebi-core
+Depends: bash, zenity, jq, pacapt
 Origin: SereneLinux
 Homepage: https://github.com/Hayao0819/EG-Installer
 Description: パッケージの追加を簡単に行える小さなGUIツール
