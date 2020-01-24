@@ -30,7 +30,7 @@
 #-- 設定 --#
 settings=/etc/serene-startdash/config
 entry_extension="entry"
-version=1.8-1
+version=1.8.1-1
 
 
 
@@ -156,9 +156,11 @@ fi
 
 #-- 設定読み込み --#
 set +eu
-if [[ ! -f $settings || ! -r $settings ]]; then
-    error 600 100 "$settingsが読み込めませんでした。"
+if [[ ! -f $settings ]]; then
+    error 600 100 "$settingsが存在しません。"
     exit 1
+elif [[ ! -r $settings ]]; then
+    error 600 100 "$settingsの読み込みに失敗しました。\n権限を確認してください。"
 fi
 source $settings
 if [[ -z $ID ]]; then
