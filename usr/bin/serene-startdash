@@ -221,17 +221,6 @@ installed_list () { ${pacman} -Q | awk '{print $2}'; }
 
 
 
-#-- pacapt --#
-if [[ ! -f $pacman ]]; then
-    error 600 100 "$pacmanが存在しません。"
-    exit 1
-fi
-if [[ ! -x $pacman ]]; then
-    chmod 755 $pacman
-fi
-
-
-
 #-- デバッグモード --#
 set +eu
 if [[ -z $debug_mode ]]; then
@@ -243,8 +232,8 @@ set -eu
 
 #-- クリーンアップ --#
 function cleanup () {
-    $pacman -Scc --noconfirm | loading 600 100 "クリーンアップを実行中です。"
-    $pacman -Rsn --noconfirm | loading 600 100 "クリーンアップを実行中です"
+    apt-get --yes clean | loading 600 100 "クリーンアップを実行中です。"
+    apt-get --yes autoremove | loading 600 100 "クリーンアップを実行中です"
 }
 
 
