@@ -35,5 +35,5 @@ cd /tmp/$SCRIPT_DIR_NAME
 sudo rm -rf .git LICENSE.md README.md build.sh
 cd ..
 dpkg -b $SCRIPT_DIR_NAME
-cp /tmp/$SCRIPT_DIR_NAME .
+cp /tmp/$SCRIPT_DIR_NAME.deb $SCRIPT_DIR
 rm -rf /tmp/${SCRIPT_DIR_NAME}
