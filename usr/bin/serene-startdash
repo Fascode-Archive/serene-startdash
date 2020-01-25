@@ -385,10 +385,9 @@ function install_and_uninstall () {
                 --height=100
             if $run_preparing; then
                 if [[ -n $preparing_msg ]]; then
-                        preparing | loading 600 100 $preparing_msg
-                    else
-                        preparing | loading 600 100 "パッケージをビルドしています"
-                    fi
+                    preparing | loading 600 100 $preparing_msg
+                else
+                    preparing | loading 600 100 "パッケージをビルドしています"
                 fi
             fi
             install | loading 600 100 "パッケージ$nameをインストールしています"
