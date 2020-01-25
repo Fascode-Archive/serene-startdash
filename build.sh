@@ -28,6 +28,7 @@ set -e
   checksomein "groups" "sudo" "Your user must in the sudo groups."
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
 SCRIPT_DIR_NAME=${SCRIPT_DIR##*/}
+rm -rf /tmp/${SCRIPT_DIR_NAME}
 cp -r $SCRIPT_DIR /tmp/${SCRIPT_DIR_NAME}
 
 cd /tmp/$SCRIPT_DIR_NAME
@@ -35,3 +36,4 @@ sudo rm -rf .git LICENSE.md README.md build.sh
 cd ..
 dpkg -b $SCRIPT_DIR_NAME
 cp /tmp/$SCRIPT_DIR_NAME .
+rm -rf /tmp/${SCRIPT_DIR_NAME}
