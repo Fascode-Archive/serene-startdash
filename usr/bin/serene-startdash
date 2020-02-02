@@ -34,6 +34,7 @@ version=1.10-1
 
 
 
+
 #-- エラーチェック --#
 set -eu
 
@@ -111,9 +112,17 @@ function check_func () {
 # パッケージチェック
 function check_pkg () {
     if [[ -n $(installed_list | grep -x "$1") ]]; then
-        printf 0
+        printf "installed_apt"
     else
-        printf 1
+        printf "notinstalled"
+    fi
+}
+
+function check_snap () {
+    if [[ -n $(installed_snap_list | grep -x "$1") ]]; then
+	printf "installed_snap"
+    else
+	printf "notinstalled"
     fi
 }
 
@@ -224,6 +233,22 @@ set -eu
 #-- check_pkgについて --#
 installed_list () { ${pacman} -Q | awk '{print $2}'; }
 
+#-- check_snapについて --#
+function isinstalled_snap () { 
+    if [[ "$(check_pkg snapd)" == installed_apt ]]; then
+	    snapd=installed
+    else
+	printf "cannot_get_install_status"
+    fi
+}
+
+function installed_snap_list () {
+    if [[ "$snapd" == installed ]]; then
+        snap list | awk 'NR>1 {print $1}'
+    else
+	printf "canot_get_install_status"
+    fi
+}
 
 
 #-- set false --#
@@ -291,9 +316,16 @@ function install_and_uninstall () {
         clear_variable
     done
 
+    # snapパッケージのアンインストール
+    function uninstall_snap () {
+        snap remove $name
+    }
+
 
 
     # リスト
+    # 高速化のためにここでsnapdがインストールされているか判定する
+   isinstalled_snap
 
     window \
         --warning \
@@ -320,10 +352,14 @@ function install_and_uninstall () {
                     set +eu
                     if [[ $install_check = false ]]; then
                         status_display="None"
-                    elif [[ $(check_pkg $package_name) = 0 ]]; then
-                        status_display="はい"
-                    else
+                    elif [[ $(check_pkg $package_name) == installed_apt ]] ; then
+			status_display="はい(APT)"
+		    elif [[ $(check_snap $package_name) == installed_snap ]]; then
+			status_display="はい(snap)"
+                    elif [[ $(check_pkg $package_name) == notinstalled && $(check_pkg $package_name) == notinstalled ]]; then
                         status_display="いいえ"
+		    else
+			statis_display="None"
                     fi
                     set -eu
                     echo "FALSE"
@@ -397,7 +433,7 @@ function install_and_uninstall () {
             install | loading 600 100 "パッケージ$nameをインストールしています"
             set +eu
         else
-            if [[ $(check_pkg $package_name) = 1 ]]; then
+            if [[ $(check_pkg $package_name) = notinstalled ]]; then
                 set -eu
                 window \
                     --question \
@@ -411,7 +447,7 @@ function install_and_uninstall () {
                 fi
                 install | loading 600 100 "パッケージ$nameをインストールしています"
                 set +eu
-            else
+	    elif [[ $(check_pkg $package_name) == installed_apt ]]; then
                 set -eu
                 window \
                     --question \
@@ -422,6 +458,18 @@ function install_and_uninstall () {
                     --height=100
                 uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
                 set +eu
+	    elif [[ $(check_snap $package_name) == installed_snap ]]; then
+	        set -eu
+		window \
+		    --question \
+		    --text="パッケージ$nameはsnapパッケージでインストール済みです。debパッケージに置き換えます。よろしいですか？" \
+		    --ok-label="続行する" \
+		    --cancel-label="中断する" \
+		    --width=600 \
+		    --height=100
+		uninstall_snap | loading 600 100 "パッケージ$nameをアンインストールしています。"
+		install | loading 600 100 "パッケージ$nameをインストールしています"
+		set +eu
             fi
         fi
         set -eu
