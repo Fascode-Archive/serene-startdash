@@ -274,6 +274,10 @@ function install_and_uninstall () {
     set + eu
     if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then
         $softwares_update | loading 600 100 "スクリプトを更新しています。"
+        if [[ -z $(ls /etc/serene-startdash/softwares 2> /dev/null) ]]; then
+            error 500 100 "スクリプトのアップデートに失敗しました。"
+            exit 1
+        fi
     fi
     set -eu
 
