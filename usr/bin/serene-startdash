@@ -231,7 +231,9 @@ set -eu
 
 
 #-- check_pkgについて --#
-installed_list () { ${pacman} -Q | awk '{print $2}'; }
+make_installed_list () { ${pacman} -Q | awk '{print $2}' > /tmp/installed_list ;}
+installed_list () { cat /tmp/installed_list ;}
+remove_installed_list () { rm -rf /tmp/installed_list ;}
 
 #-- check_snapについて --#
 function isinstalled_snap () { 
@@ -330,6 +332,7 @@ function install_and_uninstall () {
     # リスト
     # 高速化のためにここでsnapdがインストールされているか判定する
    isinstalled_snap
+   make_installed_list
 
     window \
         --warning \
@@ -387,6 +390,7 @@ function install_and_uninstall () {
         fi
         )"
         call_me $options
+        remove_installed_list
         exit
     fi
     set -eu
