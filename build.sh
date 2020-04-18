@@ -1,39 +1,17 @@
-#!/usr/bin/env bash 
+#!/bin/bash
+
 set -e
+if [[ $UID == 0 ]]; then
+    echo "You must not run this as root." 1>&2
+    exit 1
+fi
 
-#いろいろ確認
-  function checksome() {
-    if [[ "$1" == "$2" ]]; then
-      echo "$3" 1>&2
-      exit 1
-    fi
-  }
-
-  function checksomenot() {
-    if [[ "$1" != "$2" ]]; then
-      echo "$3" 1>&2
-      exit 1
-    fi
-  }
-
-  function checksomein() {
-    if [[ ! $("$1" | grep "$2") ]]; then
-      echo "$3" 1>&2
-      exit 1
-    fi
-  }
-
-  #実行ユーザ確認
-  checksome "$UID" "0" "You must not run this as root."
-  checksomein "groups" "sudo" "Your user must in the sudo groups."
-SCRIPT_DIR=$(cd $(dirname $0); pwd)
-SCRIPT_DIR_NAME=${SCRIPT_DIR##*/}
-rm -rf /tmp/${SCRIPT_DIR_NAME}
-cp -r $SCRIPT_DIR /tmp/${SCRIPT_DIR_NAME}
-
-cd /tmp/$SCRIPT_DIR_NAME
-sudo rm -rf .git LICENSE.md README.md build.sh
+if !(type docker >/dev/null); then
+    echo "Docker is not installing on this machine." 1>&2
+    exit 1
+fi
+WORKDIR=$(cd $(dirname $0); pwd)
+NAME=serene-startdash
 cd ..
-dpkg -b $SCRIPT_DIR_NAME
-cp /tmp/$SCRIPT_DIR_NAME.deb $SCRIPT_DIR
-rm -rf /tmp/${SCRIPT_DIR_NAME}
+sudo docker build -t build_serenestartdash ${WORKDIR}
+sudo docker run -e NAME=$NAME -e UGID="${UID}:$(id -u)" -v ${WORKDIR}:/debuild/build/${NAME}-source:ro -v ${WORKDIR}/out:/deb -it build_serenestartdash
